@@ -1,9 +1,5 @@
-const { series } = require("gulp");
-var run = require("gulp-run");
 var path = require("path");
-var Client = require("ssh2-sftp-client");
 var GulpSSH = require("gulp-ssh");
-var sftp = new Client();
 
 const dotenvPath = path.join(__dirname, ".", ".env");
 require("dotenv").config({ path: dotenvPath });
@@ -13,7 +9,7 @@ const config = {
   username: process.env.SSH_USER,
   password: process.env.SSH_PW,
   port: process.env.SSH_PORT || 22,
-  remotePath: "./dev/raspberry-home-api/",
+  remotePath: process.env.REMOTE_PATH,
 };
 
 var gulpSSH = new GulpSSH({
@@ -26,40 +22,19 @@ function defaultTask(cb) {
   cb();
 }
 
-function build() {
-  console.log("1) Build REST API...");
-  return run("nest build").exec();
-}
-
-function stopAndDeleteOldBuild() {
-  console.log("2) Stop current server and delete build...");
+function deploy() {
   return gulpSSH
-    .shell([`killall node`, `rm -r ${config.remotePath}`])
-    .on("ssh2Data", (data) => console.dir(data.toString()));
-}
-
-function copyBuild() {
-  return sftp
-    .connect(config)
-    .then(() => {
-      console.log("3) Copy new build...");
-      return sftp.uploadDir(`dist`, `${config.remotePath}`);
-    })
-    .then((data) => {
-      console.log(data);
-      return sftp.end();
-    })
-    .catch((err) => {
-      console.log(err, "catch error");
-    });
-}
-
-function runBuild() {
-  console.log("4) Run new build...");
-  return gulpSSH
-    .shell([`node ${config.remotePath}main`])
+    .shell([
+      "sudo kill -9 `sudo lsof -t -i:3000`",
+      `cd ${config.remotePath}`,
+      `git pull`,
+      `npm i`,
+      `npm run build`,
+      `pm2 start dist/main.js`, // start in background
+      `sleep 10`
+    ])
     .on("ssh2Data", (data) => console.dir(data.toString()));
 }
 
 exports.default = defaultTask;
-exports.deploy = series(build, stopAndDeleteOldBuild, copyBuild, runBuild);
+exports.deploy = deploy;

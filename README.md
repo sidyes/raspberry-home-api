@@ -11,5 +11,17 @@ REST API designed to be used within your local network to control "smart" device
 ## How to
 
 ### Local Env
+tbd
 
 ### Raspberry Pi Env
+tbd
+
+## Raspberry Pi Setup
+
+### NGINX 
+tbd
+
+### PM 2
+
+tbd
+pm2 list, pm2 status or pm2 show
