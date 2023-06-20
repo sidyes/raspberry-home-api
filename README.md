@@ -10,11 +10,27 @@ REST API designed to be used within your local network to control "smart" device
 
 ## How to
 
-### Local Env
-tbd
+### Swagger
 
-### Raspberry Pi Env
-tbd
+You can access the OpenApi specification by visitting `/api` (e.g. `localhost:3000/api` on your local machine).
+
+### Local DEV
+
+Run `npm start` to start the server locally.
+
+### Deployment
+
+Run `gulp deploy` in order to deploy a new production build to your target environment. 
+You can define the environment by creating a `.env` file containing the following variables:
+
+```yaml
+API_KEY=<API key> # the API which is used to secure your API 
+SSH_USER=<userame> 
+SSH_PW=<password>
+SSH_HOST=<hostname>
+REMOTE_PATH=</target/path/on/your/pi> # where to deploy on your PI?
+```
+
 
 ## Raspberry Pi Setup
 
