@@ -4,9 +4,11 @@ REST API designed to be used within your local network to control "smart" device
 
 ## Prerequesites
 
-1. Raspberry PI with node installed
+1. Raspberry PI with node & python installed
 2. RF transmitter attached to the Raspberry PI in order to send fan commands
 3. (WiringPi)[https://projects.drogon.net/raspberry-pi/wiringpi/download-and-install/] must be installed
+   -> Inofficial successor: https://github.com/WiringPi/WiringPi
+
 
 ## How to
 
@@ -34,6 +36,9 @@ REMOTE_PATH=</target/path/on/your/pi> # where to deploy on your PI?
 
 ## Raspberry Pi Setup
 
+### Transmitter/Receiver Setup
+tbd
+
 ### NGINX 
 tbd
 
@@ -41,3 +46,7 @@ tbd
 
 tbd
 pm2 list, pm2 status or pm2 show
+
+### Sniff Signals
+
+https://github.com/jderehag/rpi-rfsniffer
