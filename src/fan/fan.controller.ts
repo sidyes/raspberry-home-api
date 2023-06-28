@@ -1,4 +1,11 @@
-import { Controller, Get, Param, ParseEnumPipe, ParseIntPipe, Query } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Param,
+  ParseEnumPipe,
+  ParseIntPipe,
+  Query,
+} from "@nestjs/common";
 import { FanService } from "./fan.service";
 import { Fan, FanCommand } from "./models";
 
@@ -12,7 +19,11 @@ export class FanController {
   }
 
   @Get(":id")
-  sendFanCommand(@Param("id", new ParseIntPipe()) id: number, @Query("cmd", new ParseEnumPipe(FanCommand)) cmd: FanCommand) {
-    return `Command ${cmd} for fan ${id} executed!`;
+  sendFanCommand(
+    @Param("id", new ParseIntPipe()) id: number,
+    @Query("cmd", new ParseEnumPipe(FanCommand)) cmd: FanCommand
+  ) {
+    console.log(`Executing command ${cmd} for fan ${id}...`);
+    return this.fanService.sendCommand(id, cmd);
   }
 }

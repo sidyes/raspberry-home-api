@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
-import { RfCommunicationService } from './rf-communication.service';
+import { Module } from "@nestjs/common";
+import { RfCommunicationService } from "./rf-communication.service";
 
 @Module({
-  providers: [RfCommunicationService]
+  providers: [RfCommunicationService],
+  exports: [RfCommunicationService],
 })
 export class RfCommunicationModule {}

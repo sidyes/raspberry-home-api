@@ -1,17 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { HttpException, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class RfCommunicationService {
+  public sendCommand(command: string): string {
+    console.log(`Sending command ${command} to the device.`);
 
-    constructor(private configService: ConfigService){}
-
-    public sendCommand(command: string): void {
-        const environment = this.configService.get<string>('environment');
-
-        // TODO: call fan
-        console.log(`Sending command ${command} to the device (env: ${environment}).`)
-
-
+    try {
+      require("child_process").execSync(
+        `python3 ${process.cwd()}/utils/send-rf-command.py`
+      );
+      return "Success";
+    } catch (error) {
+      console.log(`Status Code: ${error.status} with '${error.message}'`);
+      throw new HttpException(
+        "Sending the command to Raspberry Pi failed.",
+        500
+      );
     }
+  }
 }
