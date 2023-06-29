@@ -1,7 +1,7 @@
 import argparse
 import time
 import warnings
-import sys
+import json
 
 # assume running on a Raspberry Pi
 prod = True
@@ -20,8 +20,7 @@ CLI = argparse.ArgumentParser(
     prog="RF sender for Raspberry PI",
     description="This script allows to send commands to the 433 MHz module installed on a Raspberry Pi",
 )
-CLI.add_argument("command", nargs="*", type=object)
-CLI.add_argument("--prod", default=True, type=bool)
+CLI.add_argument("command", type=str)
 args = CLI.parse_args()
 
 
@@ -29,19 +28,28 @@ def send(command):
     if prod:
         # send command to PIN 11
         GPIO.setup(11, GPIO.OUT, initial=GPIO.LOW)
-        for i, (timing, level) in enumerate(command):
-            if i != 0:
-                # sleep
-                now = time.time()
-                while now + timing > time.time():
-                    pass
-            GPIO.output(11, level)
-            
     else:
         print("Running in local development mode -> no command is actually sent")
 
+    total_output = ""
 
-send(args.command)
+    for i, pair in enumerate(command):
+        if i != 0:
+            # sleep
+            now = time.time()
+            while now + float(pair['timing']) > time.time():
+                pass
+        total_output += pair['level']
+        if prod:
+            GPIO.output(11, int(pair['level']))
+
+    print("Sent {} to Raspberri Pi Rf Transmitter".format(total_output))
+
+# parse command 
+commands = json.loads(args.command)
+
+send(commands)
+
 
 if prod:
     GPIO.cleanup()

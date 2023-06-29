@@ -19,11 +19,13 @@ export class FanController {
   }
 
   @Get(":id")
-  sendFanCommand(
+  async sendFanCommand(
     @Param("id", new ParseIntPipe()) id: number,
     @Query("cmd", new ParseEnumPipe(FanCommand)) cmd: FanCommand
-  ) {
+  ): Promise<string> {
     console.log(`Executing command ${cmd} for fan ${id}...`);
-    return this.fanService.sendCommand(id, cmd);
+    const result = await this.fanService.sendCommand(id, cmd);
+
+    return result;
   }
 }

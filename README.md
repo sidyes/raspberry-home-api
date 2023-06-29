@@ -20,6 +20,13 @@ You can access the OpenApi specification by visitting `/api` (e.g. `localhost:30
 
 Run `npm start` to start the server locally.
 
+#### How to add new devices 
+
+TBD
+
+Filename:
+`require('crypto').createHash('md5').update(<deviceType>).digest('hex')`
+
 ### Deployment
 
 Run `gulp deploy` in order to deploy a new production build to your target environment. 

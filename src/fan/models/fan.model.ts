@@ -1,4 +1,3 @@
-export interface Fan {
-  id: number;
-  location: string;
-}
+import { Device } from "src/shared/models";
+
+export interface Fan extends Device {}
