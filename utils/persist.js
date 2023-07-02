@@ -20,9 +20,13 @@ fs.readFile("codes.txt", "utf8", (err, data) => {
     sequence.push(sequenceObj);
   });
   
-  fs.writeFile('codes.json', JSON.stringify(sequence), err => {
+  fs.writeFile('codes', JSON.stringify(sequence), err => {
     if (err) {
       console.error(err);
     }
   });
 });
+
+
+// create hash for command file
+require('crypto').createHash('md5').update("XX").digest('hex') // replace XX by the name of the device

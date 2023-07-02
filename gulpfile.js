@@ -25,13 +25,13 @@ function defaultTask(cb) {
 function deploy() {
   return gulpSSH
     .shell([
-      "sudo kill -9 `sudo lsof -t -i:3000`",
       `cd ${config.remotePath}`,
       `git pull`,
       `npm i`,
       `npm run build`,
       `NODE_ENV=production pm2 start dist/main.js`, // start in background
-      `sleep 10`
+      "sudo kill -9 `sudo lsof -t -i:3000`",
+      "sleep 5"
     ])
     .on("ssh2Data", (data) => console.dir(data.toString()));
 }
