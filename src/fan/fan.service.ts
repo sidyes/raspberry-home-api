@@ -15,8 +15,8 @@ export class FanService {
   getAvailableFans(): Fan[] {
     return [
       {
-        id: 1,
-        location: "Sample",
+        id: 0,
+        location: "Bedroom",
       },
     ];
   }
