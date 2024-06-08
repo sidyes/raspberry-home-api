@@ -9,5 +9,5 @@ export enum FanCommand {
     TIMER_1H = "TIMER_1H",
     TIMER_4H = "TIMER_4H",
     TIMER_8H = "TIMER_8H",
-    TEST = "TEST",
+    NIGHT_MODE = "NIGHT_MODE",
 }
