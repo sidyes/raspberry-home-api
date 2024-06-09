@@ -9,5 +9,6 @@ export enum FanCommand {
     TIMER_1H = "TIMER_1H",
     TIMER_4H = "TIMER_4H",
     TIMER_8H = "TIMER_8H",
-    NIGHT_MODE = "NIGHT_MODE",
+    NIGHT_MODE_1 = "NIGHT_MODE_1", // 10 min every hour for 7 hours
+    NIGHT_MODE_2 = "NIGHT_MODE_2", // 30 min first hour, infinite running at 5:30 am
 }

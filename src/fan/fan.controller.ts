@@ -8,10 +8,14 @@ import {
 } from "@nestjs/common";
 import { FanService } from "./fan.service";
 import { Fan, FanCommand } from "./models";
+import { NightModeService } from "./night-mode-service";
 
 @Controller("fans")
 export class FanController {
-  constructor(private readonly fanService: FanService) {}
+  constructor(
+    private readonly fanService: FanService,
+    private readonly nightModeService: NightModeService
+  ) {}
 
   @Get()
   getAvailableFans(): Fan[] {
@@ -25,21 +29,19 @@ export class FanController {
   ): Promise<string> {
     console.log(`Executing command ${cmd} for fan ${id}...`);
 
-    if(cmd === FanCommand.NIGHT_MODE){
-      return await this.fanService.startNightMode(id);
-    }else {
+    if (cmd.startsWith("NIGHT_MODE")) {
+      this.nightModeService.startNightMode(id, cmd);
+      return Promise.resolve(`Night Mode ${cmd} successfully started.`);
+    } else {
       return await this.fanService.sendCommand(id, cmd);
     }
   }
 
-  @Get(":id")
-  async startNightMode(
-    @Param("id", new ParseIntPipe()) id: number,
-    @Query("cmd", new ParseEnumPipe(FanCommand)) cmd: FanCommand
-  ): Promise<string> {
-    console.log(`Executing command ${cmd} for fan ${id}...`);
-    const result = await this.fanService.sendCommand(id, cmd);
-
-    return result;
+  @Get("status/:id")
+  async isNightModeRunning(
+    @Param("id", ParseIntPipe) id: number
+  ): Promise<{ isRunning: boolean }> {
+    const isRunning = await this.nightModeService.isNightModeRunning(id);
+    return { isRunning };
   }
 }
