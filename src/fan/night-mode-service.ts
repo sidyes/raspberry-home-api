@@ -18,7 +18,7 @@ export class NightModeService {
     private readonly storageService: StorageService
   ) {}
 
-  public async startNightMode(id: number, cmd: FanCommand): Promise<void> {
+  public async cancelNightMode(id: number): Promise<void> {
     const currentState = this.nightModeStates.get(id);
     if (currentState?.isRunning) {
       Logger.log(
@@ -26,6 +26,10 @@ export class NightModeService {
       );
       currentState.cancel();
     }
+  }
+
+  public async startNightMode(id: number, cmd: FanCommand): Promise<void> {
+    this.cancelNightMode(id);
 
     if (cmd === FanCommand.NIGHT_MODE_1) {
       await this.runNightMode1(id);

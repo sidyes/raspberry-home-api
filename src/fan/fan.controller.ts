@@ -33,11 +33,12 @@ export class FanController {
       this.nightModeService.startNightMode(id, cmd);
       return Promise.resolve(`Night Mode ${cmd} successfully started.`);
     } else {
+      await this.nightModeService.cancelNightMode(id);
       return await this.fanService.sendCommand(id, cmd);
     }
   }
 
-  @Get("status/:id")
+  @Get(":id/status")
   async isNightModeRunning(
     @Param("id", ParseIntPipe) id: number
   ): Promise<{ isRunning: boolean }> {
