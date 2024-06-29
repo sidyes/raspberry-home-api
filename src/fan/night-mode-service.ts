@@ -60,7 +60,19 @@ export class NightModeService {
       Logger.log(`Starting night mode for device ID ${id}.`);
       const cancelPromise = this.createCancelPromise(id);
       await this.runFanForDuration(id, 1800000, cancelPromise);
-      await Promise.race([this.delay(this.getDelayUntilNext530AM()), cancelPromise]);
+      Logger.log(`Night mode: waiting until next 5:30 AM`);
+      const timeToWait = this.getDelayUntilNext530AM();
+      const hours = Math.floor(timeToWait / (1000 * 60 * 60));
+      const minutes = Math.floor((timeToWait % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeToWait % (1000 * 60)) / 1000);
+
+      // Format the result as a string
+      const formattedTime = `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+      Logger.log(`Night mode: ${formattedTime} until 5:30 AM`);
+      await Promise.race([
+        this.delay(timeToWait),
+        cancelPromise,
+      ]);
       await this.runFanAt530AM(id, cancelPromise);
     } catch (error) {
       this.handleNightModeError(error, id);
@@ -104,7 +116,11 @@ export class NightModeService {
     }
   }
 
-  private async runFanForDuration(id: number, duration: number, cancelPromise: Promise<void>): Promise<void> {
+  private async runFanForDuration(
+    id: number,
+    duration: number,
+    cancelPromise: Promise<void>
+  ): Promise<void> {
     const startSpeed1 = await this.storageService.getCommandSequence(
       DeviceType.FAN,
       id,
@@ -125,18 +141,15 @@ export class NightModeService {
     this.rfCommunicationService.sendCommand(stop);
   }
 
-  private async runFanAt530AM(id: number, cancelPromise: Promise<void>): Promise<void> {
+  private async runFanAt530AM(
+    id: number,
+    cancelPromise: Promise<void>
+  ): Promise<void> {
     const startSpeed1 = await this.storageService.getCommandSequence(
       DeviceType.FAN,
       id,
       FanCommand.SPEED_1
     );
-
-    Logger.log(`Night mode: waiting until next 5:30 AM`);
-    await Promise.race([
-      this.delay(this.getDelayUntilNext530AM()),
-      cancelPromise,
-    ]);
 
     Logger.log(
       `Night mode: starting fan ${id} with speed ${FanCommand.SPEED_1} at 5:30 AM`
@@ -144,7 +157,7 @@ export class NightModeService {
     this.rfCommunicationService.sendCommand(startSpeed1);
 
     await new Promise<void>((_, reject) => {
-      setTimeout(() => reject(new Error("Night mode cancelled")), Infinity);
+      setTimeout(() => reject(new Error("Night mode stopped")), Infinity);
     });
   }
 
@@ -181,7 +194,7 @@ export class NightModeService {
     const now = new Date();
     let next530AM = new Date(now);
     next530AM.setHours(5, 30, 0, 0); // Set to 5:30 AM today
-    if (now >= next530AM) {
+    if (now > next530AM) {
       next530AM.setDate(next530AM.getDate() + 1); // If it's past 5:30 AM today, set to 5:30 AM tomorrow
     }
     return next530AM.getTime() - now.getTime();
